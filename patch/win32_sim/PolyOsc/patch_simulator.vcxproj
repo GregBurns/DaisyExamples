@@ -142,10 +142,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\DaisySP\modules\dcblock.cpp" />
-    <ClCompile Include="..\..\..\DaisySP\modules\reverbsc.cpp" />
-    <ClCompile Include="..\..\verb\ex_verb.cpp" />
+    <ClCompile Include="..\..\..\DaisySP\modules\oscillator.cpp" />
     <ClCompile Include="..\..\..\libDaisy\src\util\oled_fonts.c" />
+    <ClCompile Include="..\..\PolyOsc\PolyOsc.cpp" />
     <ClCompile Include="..\audioin.cpp" />
     <ClCompile Include="..\audioout.cpp" />
     <ClCompile Include="..\cmdline.cpp" />
