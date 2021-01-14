@@ -1,7 +1,14 @@
-This is a Daisy Patch simulator that runs on windows. It is a self contained windows command line application that displays a windows simulating the OLE display, the analog control inputs, and the two gate input. The mouse scroll button is mapped to encoder forward/backward, the left and middle mouse buttons both map the encode push button.
+This is a Daisy Patch simulator that runs on windows. It is a self contained windows command line application that launches a windows that simulates the Patch OLED display, sliders for the four analog control inputs, and push buttons for the two gate inputs. The mouse scroll button is mapped to the Patch encoder forward/backward, the left and middle mouse buttons both map to the encoder push button.
 
-The simulator uses libsndfile, an open source sound library and requires the libsndfile-1.dll to be in a folder on the binary search PATH or in the folder the application is launched from. The application builds in 32 bit mode for consistency with the patch hardware.
+The simulator uses libsndfile, an open source sound library and requires the libsndfile-1.dll to be in the folder the application is launched from or in a folder listed in the PATH environment variable. The application builds in 32 bit mode for consistency with the Patch hardware, if the build fails check that x86 is selected in the visual studio configuration manager drop-down.
 
-The simulator can take audio input from a .wav file and also has a built-in waveform generator. The .wav files can be mono or stereo, a mono input is duplicated to all input channels, stereo L/R is duplicated to channels 3/4. The waveform generator is duplicated to all input channels. When input is from a .wav file the sample rate is fixed at the sample rate in the file, otherwise all the path sample rates are available. There is a looping option for the .wav file which is useful when the .wav file is just a single note.
+The simulator can take audio input from a .wav file and also has a built-in waveform generator. The .wav files can be mono or stereo. A mono input is duplicated to all input channels, stereo L/R is sent to channels 1 and 2 respectively and duplicated to channels 3/4. The waveform generator is duplicated to all input channels. When input is from a .wav file the sample rate is fixed at the sample rate in the file, otherwise all the Patch sample rates are available. There is a looping option for the .wav file which is useful for testing with continuous input.
 
+The command line arguments are:
 
+-w [sin|square|triangle|saw]   : Selects a continuous tone as the audio input
+-f filename                    : Selects a .WAV file as the audio input
+-l                             : Sets looping on for the .WAV file
+-d                             : Enables debug output - currently just prints the control and encoder changes
+
+There are twp pre-populated visual studio projects, Verb which works best with a wave file as input and PolyOsc which takes no input.
