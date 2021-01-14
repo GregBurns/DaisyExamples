@@ -62,7 +62,7 @@ size_t AudioIn::Read(float* samples[4], size_t size)
             if (loop) {
                 // Rewind to start of file and read missing chunk
                 sf_seek(sf, 0, SEEK_SET);
-                rd += (size_t)sf_readf_short(sf, pcm + (size = rd) * sfInfo.channels, size - rd);
+                rd += (size_t)sf_readf_short(sf, pcm + (size - rd) * sfInfo.channels, size - rd);
             }
             // Repeat check in case looping and seek didn't work
             if (rd < size) {
