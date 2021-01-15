@@ -65,8 +65,12 @@ struct AudioHandle {
 class Encoder {
     public:
         Encoder() {}
+        void Debounce() {};
         int Increment();
         bool RisingEdge();
+        bool FallingEdge();
+        bool Pressed();
+        float TimeHeldMs();
 };
 
 class GateIn {
@@ -174,7 +178,10 @@ class DaisyPatch {
 
     private:
 
-        bool encoderClick;
+        bool encoderUp;
+        bool encoderDown;
+        bool encoderState;
+        uint32_t encoderDownTime;
         bool encoderForward;
         bool encoderBackward;
         size_t audioBlockSize;

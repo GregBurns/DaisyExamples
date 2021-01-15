@@ -47,7 +47,8 @@ typedef enum {
     ControlNone,
     EncoderForward,
     EncoderBackward,
-    EncoderClick,
+    EncoderDown,
+    EncoderUp,
     Gate1Trigger,
     Gate1Release,
     Gate2Trigger,
@@ -148,7 +149,11 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM l
             break;
         case WM_LBUTTONDOWN:
         case WM_MBUTTONDOWN:
-            ctrl = EncoderClick;
+            ctrl = EncoderDown;
+            break;
+        case WM_LBUTTONUP:
+        case WM_MBUTTONUP:
+            ctrl = EncoderUp;
             break;
         case WM_MOUSEWHEEL:
             ctrl = (short)HIWORD(wparam) >= 0 ? EncoderForward : EncoderBackward;
@@ -218,7 +223,8 @@ void DaisyPatch::ProcessDigitalControls()
 {
     encoderForward = false;
     encoderBackward = false;
-    encoderClick = false;
+    encoderUp = false;
+    encoderDown = false;
     EnterCriticalSection(&controlCS);
     SleepConditionVariableCS(&controlEvent, &controlCS, 0);
     switch (control) {
@@ -230,8 +236,14 @@ void DaisyPatch::ProcessDigitalControls()
         case EncoderBackward:
             encoderBackward = true;
             break;
-        case EncoderClick:
-            encoderClick = true;
+        case EncoderUp:
+            encoderState = false;
+            encoderUp = true;
+            break;
+        case EncoderDown:
+            encoderDownTime = System::GetNow();
+            encoderState = true;
+            encoderDown = true;
             break;
         case Gate1Trigger:
             gateTriggered[GATE_IN_1] = true;
@@ -273,6 +285,7 @@ void DaisyPatch::ProcessDigitalControls()
 DaisyPatch::DaisyPatch() :
     controls{{CTRL_1}, {CTRL_2}, {CTRL_3}, {CTRL_4} },
     gate_input{ {GATE_IN_1}, {GATE_IN_2} },
+    encoderState(false),
     audioBlockSize(48), sampleRateExternal(false), sampleRate(48000)
 {
     InitializeConditionVariable(&controlEvent);
@@ -305,10 +318,34 @@ int Encoder::Increment()
     return 0;
 }
 
+float Encoder::TimeHeldMs()
+{
+    if (DaisyPatch::patchSingleton->encoderState) {
+        return (float)(System::GetNow() - DaisyPatch::patchSingleton->encoderDownTime);
+    } else {
+        return 0.0f;
+    }
+}
+
+bool Encoder::Pressed()
+{
+    return DaisyPatch::patchSingleton->encoderState;
+}
+
 bool Encoder::RisingEdge()
 {
-    if (DaisyPatch::patchSingleton->encoderClick) {
-        DaisyPatch::patchSingleton->encoderClick = false;
+    if (DaisyPatch::patchSingleton->encoderUp) {
+        DaisyPatch::patchSingleton->encoderUp = false;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Encoder::FallingEdge()
+{
+    if (DaisyPatch::patchSingleton->encoderDown) {
+        DaisyPatch::patchSingleton->encoderDown = false;
         return true;
     } else {
         return false;
